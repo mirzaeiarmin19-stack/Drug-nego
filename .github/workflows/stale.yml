@@ -1,4 +1,648 @@
-# This workflow warns and then closes issues and PRs that have had no activity for a specified amount of time.
+# Th<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>تبادل | شبکه مبادله مازاد داروخانه‌ها</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0F5C56">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="تبادل">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg:#F2F4F1;
+  --surface:#FFFFFF;
+  --ink:#1C2B2A;
+  --ink-soft:#5B6B67;
+  --ink-faint:#8B9C97;
+  --accent:#0F5C56;
+  --accent-dark:#0B4440;
+  --accent-soft:#E4EEEC;
+  --warn:#B8622A;
+  --warn-soft:#F5E6D8;
+  --danger:#A8402E;
+  --danger-soft:#F3E1DC;
+  --border:#D8DDD4;
+  --radius:10px;
+  --shadow:0 1px 2px rgba(28,43,42,0.06);
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:'Vazirmatn','Tahoma','Arial',sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  display:flex;
+  justify-content:center;
+}
+
+#app{
+  width:100%;
+  max-width:460px;
+  min-height:100vh;
+  background:var(--bg);
+  position:relative;
+  padding-bottom:74px;
+}
+
+/* ---------- Header ---------- */
+.topbar{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:16px 18px 14px;
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+.topbar-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+}
+.topbar-title{
+  font-size:19px;
+  font-weight:700;
+  letter-spacing:-0.2px;
+}
+.topbar-sub{
+  font-size:12.5px;
+  color:var(--ink-soft);
+  margin-top:2px;
+}
+.trust-chip{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  background:var(--accent-soft);
+  color:var(--accent-dark);
+  border-radius:20px;
+  padding:5px 11px;
+  font-size:12.5px;
+  font-weight:600;
+  white-space:nowrap;
+}
+.verified-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--accent);
+  display:inline-block;
+}
+
+/* ---------- Search ---------- */
+.search-wrap{padding:12px 18px 4px;}
+.search-box{
+  width:100%;
+  border:1px solid var(--border);
+  background:var(--surface);
+  border-radius:var(--radius);
+  padding:11px 14px;
+  font-size:14px;
+  font-family:inherit;
+  color:var(--ink);
+}
+.search-box:focus{outline:none;border-color:var(--accent);}
+
+/* ---------- Content ---------- */
+.view{padding:10px 18px 8px;}
+.section-label{
+  font-size:13px;
+  color:var(--ink-soft);
+  margin:14px 2px 8px;
+}
+
+/* ---------- Listing Card ---------- */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:14px 15px;
+  margin-bottom:10px;
+  border-right:4px solid var(--border);
+}
+.card.urgent{border-right-color:var(--danger);}
+.card.soon{border-right-color:var(--warn);}
+.card-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+}
+.drug-name{font-size:15.5px;font-weight:600;}
+.drug-meta{font-size:12.5px;color:var(--ink-soft);margin-top:3px;}
+.price-tag{
+  font-size:14.5px;
+  font-weight:700;
+  color:var(--accent-dark);
+  white-space:nowrap;
+}
+.tags-row{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+.tag{
+  font-size:11.5px;
+  padding:3px 9px;
+  border-radius:20px;
+  font-weight:600;
+}
+.tag.expiry-ok{background:var(--accent-soft);color:var(--accent-dark);}
+.tag.expiry-soon{background:var(--warn-soft);color:var(--warn);}
+.tag.expiry-urgent{background:var(--danger-soft);color:var(--danger);}
+.tag.seller{background:var(--bg);color:var(--ink-soft);}
+.card-bottom{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:11px;
+  padding-top:11px;
+  border-top:1px solid var(--border);
+}
+.seller-line{font-size:12.5px;color:var(--ink-soft);display:flex;align-items:center;gap:6px;}
+.mini-badge{
+  width:14px;height:14px;border-radius:50%;
+  background:var(--accent);
+  display:inline-flex;align-items:center;justify-content:center;
+  color:#fff;font-size:9px;font-weight:700;
+}
+
+/* ---------- Buttons ---------- */
+.btn{
+  border:none;
+  border-radius:var(--radius);
+  padding:10px 16px;
+  font-family:inherit;
+  font-size:13.5px;
+  font-weight:600;
+  cursor:pointer;
+  transition:opacity .15s;
+}
+.btn:active{opacity:.75;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-outline{background:transparent;color:var(--accent-dark);border:1px solid var(--accent);}
+.btn-ghost{background:var(--bg);color:var(--ink-soft);}
+.btn-danger-outline{background:transparent;color:var(--danger);border:1px solid var(--danger-soft);}
+.btn-full{width:100%;}
+.btn-sm{padding:7px 12px;font-size:12.5px;}
+
+/* ---------- Empty state ---------- */
+.empty{
+  text-align:center;
+  padding:50px 20px;
+  color:var(--ink-faint);
+}
+.empty-icon{font-size:34px;margin-bottom:10px;}
+.empty-title{font-size:14.5px;color:var(--ink-soft);font-weight:600;margin-bottom:4px;}
+.empty-text{font-size:12.5px;line-height:1.7;}
+
+/* ---------- Form ---------- */
+.field{margin-bottom:14px;}
+.field label{
+  display:block;
+  font-size:12.5px;
+  color:var(--ink-soft);
+  margin-bottom:6px;
+  font-weight:600;
+}
+.field input, .field select, .field textarea{
+  width:100%;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:10px 13px;
+  font-family:inherit;
+  font-size:14px;
+  background:var(--surface);
+  color:var(--ink);
+}
+.field input:focus, .field select:focus, .field textarea:focus{outline:none;border-color:var(--accent);}
+.field-row{display:flex;gap:10px;}
+.field-row .field{flex:1;}
+.helper-text{font-size:11.5px;color:var(--ink-faint);margin-top:5px;line-height:1.6;}
+
+.photo-upload{
+  border:1.5px dashed var(--border);
+  border-radius:var(--radius);
+  padding:20px 14px;
+  text-align:center;
+  cursor:pointer;
+  background:var(--surface);
+}
+.photo-upload.filled{border-style:solid;border-color:var(--accent);background:var(--accent-soft);}
+.photo-upload input{display:none;}
+.photo-upload-icon{font-size:24px;margin-bottom:6px;}
+.photo-upload-label{font-size:13px;color:var(--ink-soft);font-weight:600;}
+.photo-upload-sub{font-size:11.5px;color:var(--ink-faint);margin-top:3px;}
+.photo-preview{max-width:100%;max-height:130px;border-radius:8px;margin-bottom:8px;}
+
+/* ---------- Bottom nav ---------- */
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  max-width:460px;
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  display:flex;
+  z-index:30;
+}
+.nav-item{
+  flex:1;
+  border:none;
+  background:none;
+  padding:11px 4px 9px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:3px;
+  font-family:inherit;
+  cursor:pointer;
+  color:var(--ink-faint);
+}
+.nav-item.active{color:var(--accent-dark);}
+.nav-icon{font-size:19px;line-height:1;}
+.nav-label{font-size:10.5px;font-weight:600;}
+
+/* ---------- Onboarding ---------- */
+.onboard-screen{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:30px 26px;
+}
+.onboard-eyebrow{font-size:13px;color:var(--accent-dark);font-weight:700;margin-bottom:6px;}
+.onboard-title{font-size:23px;font-weight:700;line-height:1.5;margin-bottom:8px;}
+.onboard-text{font-size:13.5px;color:var(--ink-soft);line-height:1.9;margin-bottom:26px;}
+.step-dots{display:flex;gap:6px;margin-bottom:22px;}
+.step-dot{width:22px;height:4px;border-radius:2px;background:var(--border);}
+.step-dot.done{background:var(--accent);}
+
+/* ---------- Order/request rows ---------- */
+.req-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:13px 15px;
+  margin-bottom:10px;
+}
+.req-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.req-status{
+  font-size:11px;
+  font-weight:700;
+  padding:3px 9px;
+  border-radius:20px;
+}
+.status-pending{background:var(--warn-soft);color:var(--warn);}
+.status-accepted{background:var(--accent-soft);color:var(--accent-dark);}
+.status-rejected{background:var(--danger-soft);color:var(--danger);}
+.status-sent{background:#E2E8F5;color:#3B4F86;}
+.req-actions{display:flex;gap:8px;margin-top:10px;}
+
+/* ---------- Profile ---------- */
+.profile-header{
+  text-align:center;
+  padding:20px 0 6px;
+}
+.avatar-circle{
+  width:62px;height:62px;border-radius:50%;
+  background:var(--accent-soft);
+  color:var(--accent-dark);
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;font-weight:700;
+  margin:0 auto 10px;
+}
+.stat-row{display:flex;gap:10px;margin-top:16px;}
+.stat-box{
+  flex:1;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:13px 8px;
+  text-align:center;
+}
+.stat-num{font-size:18px;font-weight:700;color:var(--accent-dark);}
+.stat-label{font-size:11px;color:var(--ink-soft);margin-top:3px;}
+
+/* ---------------- Chat ---------------- */
+.chat-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:14px 18px;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  position:sticky;
+  top:0;
+}
+.chat-back{
+  border:none;background:none;font-size:18px;cursor:pointer;color:var(--ink);
+  padding:2px 4px;
+}
+.chat-title{font-size:15px;font-weight:700;}
+.chat-sub{font-size:11.5px;color:var(--ink-soft);}
+.chat-body{
+  padding:16px 18px;
+  min-height:calc(100vh - 230px);
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.chat-context{
+  background:var(--accent-soft);
+  color:var(--accent-dark);
+  border-radius:var(--radius);
+  padding:10px 13px;
+  font-size:12.5px;
+  text-align:center;
+  margin-bottom:6px;
+}
+.msg-row{display:flex;}
+.msg-row.mine{justify-content:flex-start;}
+.msg-row.theirs{justify-content:flex-end;}
+.msg-bubble{
+  max-width:75%;
+  padding:9px 13px;
+  border-radius:14px;
+  font-size:13.5px;
+  line-height:1.7;
+}
+.msg-row.mine .msg-bubble{
+  background:var(--accent);
+  color:#fff;
+  border-bottom-left-radius:4px;
+}
+.msg-row.theirs .msg-bubble{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-bottom-right-radius:4px;
+}
+.msg-time{font-size:10px;color:var(--ink-faint);margin-top:3px;}
+.msg-row.mine .msg-time{text-align:left;}
+.msg-row.theirs .msg-time{text-align:right;}
+.chat-input-bar{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  max-width:460px;
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  padding:10px 12px;
+  display:flex;
+  gap:8px;
+  z-index:30;
+}
+.chat-input-bar input{
+  flex:1;
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:10px 15px;
+  font-family:inherit;
+  font-size:13.5px;
+}
+.chat-input-bar input:focus{outline:none;border-color:var(--accent);}
+.chat-send{
+  border:none;
+  background:var(--accent);
+  color:#fff;
+  width:40px;height:40px;
+  border-radius:50%;
+  font-size:15px;
+  cursor:pointer;
+  flex-shrink:0;
+}
+.chat-empty{
+  text-align:center;
+  color:var(--ink-faint);
+  font-size:12.5px;
+  padding:30px 10px;
+}
+
+.toast{
+  position:fixed;
+  bottom:84px;
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--ink);
+  color:#fff;
+  padding:10px 18px;
+  border-radius:20px;
+  font-size:13px;
+  z-index:100;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s;
+}
+.toast.show{opacity:1;}
+
+@media (prefers-reduced-motion: reduce){
+  .toast{transition:none;}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------------- State ---------------- */
+let profile = null;
+let listings = [];
+let requests = [];
+let currentTab = 'home';
+let onboardStep = 0;
+let onboardData = { name:'', phone:'', city:'', photo:false, photoPreview:null, location:null };
+let searchQuery = '';
+let messages = {}; // { requestId: [ {from, text, time} ] }
+let openChatReqId = null;
+
+const TEHRAN_COUNTIES = ['تهران','ری','اسلامشهر','شهریار','ملارد','رباط‌کریم (پرند)','بهارستان (نسیم‌شهر)','قدس','شمیرانات (تجریش)','پاکدشت','ورامین','پیشوا','قرچک','دماوند','فیروزکوه','پردیس'];
+const OTHER_CITIES = ['مشهد','اصفهان','شیراز','تبریز','کرج','اهواز','قم','کرمانشاه','رشت'];
+
+/* ---------------- Storage helpers ---------------- */
+async function loadAll(){
+  try{
+    const p = await window.storage.get('profile', false);
+    profile = p ? JSON.parse(p.value) : null;
+  }catch(e){ profile = null; }
+
+  try{
+    const l = await window.storage.get('listings', true);
+    listings = l ? JSON.parse(l.value) : seedListings();
+    if(!l) await window.storage.set('listings', JSON.stringify(listings), true);
+  }catch(e){ listings = seedListings(); }
+
+  try{
+    const r = await window.storage.get('requests', true);
+    requests = r ? JSON.parse(r.value) : [];
+  }catch(e){ requests = []; }
+
+  try{
+    const m = await window.storage.get('messages', true);
+    messages = m ? JSON.parse(m.value) : {};
+  }catch(e){ messages = {}; }
+
+  render();
+}
+
+function seedListings(){
+  return [
+    {id:'s1', drug:'آموکسی‌سیلین ۵۰۰', qty:200, unit:'عدد', expiry: daysFromNow(9), price:'۴۵٬۰۰۰', pharmacy:'داروخانه دکتر رضایی', city:'تهران', verified:true, note:'بسته‌بندی سالم، فاکتور موجود'},
+    {id:'s2', drug:'استامینوفن کدئین', qty:500, unit:'عدد', expiry: daysFromNow(45), price:'۱۲۰٬۰۰۰', pharmacy:'داروخانه شبانه‌روزی مهر', city:'اصفهان', verified:true, note:''},
+    {id:'s3', drug:'آتورواستاتین ۲۰', qty:80, unit:'بسته', expiry: daysFromNow(4), price:'۳۸۰٬۰۰۰', pharmacy:'داروخانه دی', city:'تهران', verified:false, note:'فقط تحویل حضوری'},
+  ];
+}
+function daysFromNow(n){
+  const d = new Date(); d.setDate(d.getDate()+n);
+  return d.toISOString().slice(0,10);
+}
+async function saveProfile(){ await window.storage.set('profile', JSON.stringify(profile), false); }
+async function saveListings(){ await window.storage.set('listings', JSON.stringify(listings), true); }
+async function saveRequests(){ await window.storage.set('requests', JSON.stringify(requests), true); }
+async function saveMessages(){ await window.storage.set('messages', JSON.stringify(messages), true); }
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+function daysUntil(dateStr){
+  const diff = Math.ceil((new Date(dateStr) - new Date()) / 86400000);
+  return diff;
+}
+function urgencyClass(d){
+  if(d<=7) return {card:'urgent', tag:'expiry-urgent', label:'بحرانی · '+d+' روز'};
+  if(d<=20) return {card:'soon', tag:'expiry-soon', label:'نزدیک انقضا · '+d+' روز'};
+  return {card:'', tag:'expiry-ok', label:d+' روز تا انقضا'};
+}
+
+/* ---------------- Render root ---------------- */
+function render(){
+  const app = document.getElementById('app');
+  if(!profile){
+    app.innerHTML = renderOnboarding();
+    bindOnboarding();
+    return;
+  }
+  if(openChatReqId){
+    app.innerHTML = renderChat(openChatReqId);
+    bindChat();
+    return;
+  }
+  app.innerHTML = `
+    ${renderTopbar()}
+    ${currentTab==='home' ? renderHome() : ''}
+    ${currentTab==='add' ? renderAdd() : ''}
+    ${currentTab==='orders' ? renderOrders() : ''}
+    ${currentTab==='profile' ? renderProfile() : ''}
+    ${renderBottomNav()}
+  `;
+  bindGlobal();
+  if(currentTab==='home') bindHome();
+  if(currentTab==='add') bindAdd();
+  if(currentTab==='orders') bindOrders();
+  if(currentTab==='profile') bindProfile();
+}
+
+/* ---------------- Onboarding ---------------- */
+function renderOnboarding(){
+  const dots = [0,1,2].map(i=>`<div class="step-dot ${i<=onboardStep?'done':''}"></div>`).join('');
+
+  if(onboardStep===0){
+    return `<div class="onboard-screen">
+      <div class="onboard-eyebrow">شبکه تبادل داروخانه‌ها</div>
+      <div class="onboard-title">مازاد انبار رو به داروخانه‌های دیگه برسون</div>
+      <div class="onboard-text">قبل از اینکه دارو تاریخ بخوره یا فضای قفسه رو اشغال کنه، به داروخانه‌ای که بهش نیاز داره بفروش یا مبادله کن.</div>
+      ${dots}
+      <div class="field">
+        <label>شماره موبایل داروخانه</label>
+        <input type="tel" id="ob-phone" placeholder="۰۹۱۲۱۲۳۴۵۶۷" maxlength="11">
+      </div>
+      <button class="btn btn-primary btn-full" id="ob-next1">دریافت کد تایید</button>
+    </div>`;
+  }
+  if(onboardStep===1){
+    return `<div class="onboard-screen">
+      <div class="onboard-eyebrow">تایید شماره</div>
+      <div class="onboard-title">کد ۴ رقمی رو وارد کن</div>
+      <div class="onboard-text">کد تایید به شماره ${onboardData.phone||''} پیامک شد. (برای این نسخه آزمایشی، هر عددی رو وارد کن)</div>
+      ${dots}
+      <div class="field">
+        <label>کد تایید</label>
+        <input type="tel" id="ob-otp" placeholder="- - - -" maxlength="4">
+      </div>
+      <button class="btn btn-primary btn-full" id="ob-next2">تایید و ادامه</button>
+    </div>`;
+  }
+  if(onboardStep===2){
+    const tehranOptions = TEHRAN_COUNTIES.map(c=>`<option value="${c}">${c}</option>`).join('');
+    const otherOptions = OTHER_CITIES.map(c=>`<option value="${c}">${c}</option>`).join('');
+    return `<div class="onboard-screen">
+      <div class="onboard-eyebrow">اطلاعات داروخانه</div>
+      <div class="onboard-title">داروخانه‌ت رو معرفی کن</div>
+      ${dots}
+      <div class="field">
+        <label>نام داروخانه</label>
+        <input type="text" id="ob-name" placeholder="مثلا داروخانه دکتر احمدی">
+      </div>
+      <div class="field">
+        <label>شهرستان</label>
+        <select id="ob-city">
+          <option value="">انتخاب شهرستان</option>
+          <optgroup label="استان تهران">${tehranOptions}</optgroup>
+          <optgroup label="سایر استان‌ها">${otherOptions}</optgroup>
+        </select>
+      </div>
+      <div class="field">
+        <label>موقعیت مکانی (اختیاری)</label>
+        <button type="button" class="btn btn-outline btn-full" id="ob-location-btn">📍 استفاده از موقعیت فعلی</button>
+        <div class="helper-text" id="ob-location-status">با اضافه کردن موقعیت، داروخانه‌های نزدیک‌تر راحت‌تر پیدات می‌کنن. کاملا اختیاریه و می‌تونی ردش کنی.</div>
+      </div>
+      <button class="btn btn-primary btn-full" id="ob-next3">ادامه</button>
+    </div>`;
+  }
+  // step 3 - trust photo
+  return `<div class="onboard-screen">
+    <div class="onboard-eyebrow">آخرین قدم · اختیاری</div>
+    <div class="onboard-title">عکس سردر داروخانه رو اضافه کن</div>
+    <div class="onboard-text">این عکس هویت داروخانه رو برای طرف مقابل واقعی‌تر می‌کنه و نشان «تاییدشده» رو روی پروفایلت فعال می‌کنه. می‌تونی این مرحله رو رد کنی و بعدا از پروفایل اضافه کنی.</div>
+    ${dots}
+    <div class="photo-upload ${onboardData.photo?'filled':''}" id="ob-photo-box">
+      <div id="ob-photo-content">
+        ${onboardData.photoPreview ? `<img class="photo-preview" src="${onboardData.photoPreview}">` : `<div class="photo-upload-icon">📷</div>`}
+        <div class="photo-upload-label">${onboardData.photo? 'عکس ثبت شد ✓ (برای تغییر ضربه بزن)' : 'ضربه بزن برای انتخاب عکس'}</div>
+        <div class="photo-upload-sub">فرمت jpg یا png</div>
+      </div>
+    </div>
+    <input type="file" accept="image/*" id="ob-photo-input" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;">
+    <div style="height:16px"></div>
+    ${onboardData.photo
+      ? `<button class="btn btn-primary btn-full" id="ob-finish">تکمیل ثبت‌نام</button>
+         <div style="height:8px"></div>
+         <button class="btn btn-ghost btn-full" id="ob-skip">رد کردن عکس و ثبت‌نام</button>`
+      : `<button class="btn btn-primary btn-full" id="ob-skip">ادامه بدون عکس</button>`}
+  </div>`;
+}
+
+function bindOnboarding(){
+  const b1 = document.getElementById('ob-next1');
+  if(b1) b1.onclick = ()=>{
+    const v = document.getElementById('ob-phone').value.trim();
+    if(v.length<10){ showToast('شماره موبایل معتبر وارد کن'); return; }
+    onboardData.phone = v; onboardStep=1; render();
+  };
+  const b2 = document.getElementById('ob-next2');
+  if(b2) b2.onclick = ()=>{
+    const v = document.getElementById('ob-otp').value.trim();
+    if(!v){ showToast('کد تایید رو وارد کن'); return; }
+    onboardStep=2; render();
+  };
+  const b3 = document.getElementById('ob-next3');
+  if(b3) b3.onclick = ()=>{
+    conis workflow warns and then closes issues and PRs that have had no activity for a specified amount of time.
 #
 # You can adjust the behavior by modifying this file.
 # For more information, see:
